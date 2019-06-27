@@ -12,6 +12,24 @@ class Spawnlist:
         self.contentCounter = 1
         self.contents = {}
 
+        self.children = []
+        self.parent = None
+
+    def addChild(self,child):
+        child.parent = self
+        self.children.append(child)
+
+    def createChild(self,name,icon="icon16/page.png"):
+        child = Spawnlist(name,id=self.getNextID(),parentid=self.id,icon=icon)
+
+        self.addChild(child)
+
+    def getNextID(self):
+        if(len(self.children) > 0):
+            return self.children[-1].id + 1
+        else:
+            return self.id + 1
+
     def __finishAddingContent(self):
         self.contentCounter += 1
 
