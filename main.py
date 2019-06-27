@@ -23,25 +23,31 @@ def populateSpawnlist(sl,modelList,i=1,strictTo=None):
     unsorted = []
     models = {}
     childrenToCreate = []
+    toRemove = []
 
-    for mdl in modelList:
+    for j,mdl in enumerate(modelList):
         split = FILE_SEPERATOR_R.split(mdl)
 
         if strictTo and (not split[i-1] == strictTo):
             continue
+        else:
+            if len(split) == n-1:
+                unsorted.append(mdl)
+                toRemove.append(j)
+            elif len(split) == n:
+                if not split[i] in models:
+                    models[split[i]] = []
+                models[split[i]].append(mdl)
+                toRemove.append(j)
+            elif len(split) > n:
+                if not split[i] in childrenToCreate:
+                    childrenToCreate.append(split[i])
 
-        if len(split) > n:
-            if not split[i] in childrenToCreate:
-                childrenToCreate.append(split[i])
-        elif len(split) == n:
-            if not split[i] in models:
-                models[split[i]] = []
-            models[split[i]].append(mdl)
-            modelList.remove(mdl)
-        elif len(split) == n-1:
-            unsorted.append(mdl)
-            modelList.remove(mdl)
-    
+    toRemove.reverse()
+
+    for j in toRemove:
+        modelList.pop(j)
+
     for childToCreate in childrenToCreate:
         child = sl.createChild(childToCreate)
         populateSpawnlist(child,modelList,i=i+1,strictTo=childToCreate)
@@ -114,6 +120,7 @@ def workItHarderDoItBetter(path):
                     if pakfile.endswith(".mdl"):
                         models.append(pakfile)
 
+                models = sorted(models,key=lambda model: len(FILE_SEPERATOR_R.findall(model)))
                 populateSpawnlist(sl,models)
 
                 saveSpawnlist(sl,path)
