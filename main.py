@@ -26,15 +26,14 @@ def populateSpawnlist(sl,modelList,i=1):
 
     for mdl in modelList:
         split = FILE_SEPERATOR_R.split(mdl)
-        key = split[i]
 
         if len(split) > n:
-            if not key in childrenToCreate:
-                childrenToCreate.append(key)
+            if not split[i] in childrenToCreate:
+                childrenToCreate.append(split[i])
         elif len(split) == n:
-            if not key in models:
-                models[key] = []
-            models[key].append(mdl)
+            if not split[i] in models:
+                models[split[i]] = []
+            models[split[i]].append(mdl)
             modelList.remove(mdl)
         elif len(split) == n-1:
             unsorted.append(mdl)
@@ -61,7 +60,7 @@ def populateSpawnlist(sl,modelList,i=1):
 def sanitiseName(name):
     return SANITISER_R.sub("-",name)
 
-def saveSpawnlist(sl,path):
+def saveSpawnlist(sl,path,isChildProcess=False):
     names = [sanitiseName(sl.name)]
     slp = sl.parent
     while not slp == None:
@@ -75,48 +74,59 @@ def saveSpawnlist(sl,path):
         try:
             f.write(sl.as_string())
         except IOError:
-            dialog.error_dialog("Failed to save spawnlist to file!",caption=CAPTION)
+            if isChildProcess:
+                dialog.error_dialog("Failed to save child spawnlist to file!",caption=CAPTION)
+            else:
+                dialog.error_dialog("Failed to save main spawnlist to file!",caption=CAPTION)
         else:
-            dialog.ok_dialog("Successfully saved spawnlist!",caption=CAPTION)
+            if not isChildProcess:
+                dialog.ok_dialog("Successfully saved spawnlist!",caption=CAPTION)
     for child in sl.children:
-        saveSpawnlist(child,path)
+        saveSpawnlist(child,path,isChildProcess=True)
+
+def workItHarderDoItBetter(path):
+    config["DEFAULT"]["PreviousSpawnlistDirectory"] = os.path.dirname(path)
+
+    files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+    files = sorted(files)
+
+    lastFile = files[-1]
+    strid = lastFile[0:3]
+    id = int(strid) + 1
+
+    if dialog.ok_cancel_dialog("Select the _dir.vpk file to make a spawnlist from.",caption=CAPTION):
+        vpkpath = dialog.open_dialog(caption=CAPTION,wildcard="Valve Pak _dir File (*_dir.vpk)|*_dir.vpk",defaultDir=config.get("DEFAULT","PreviousVPKDirectory",fallback=""))
+        if vpkpath:
+            config["DEFAULT"]["PreviousVPKDirectory"] = os.path.dirname(vpkpath)
+            name = dialog.text_entry_dialog(message="Name your spawnlist.",caption=CAPTION)
+            if name and (not name==""):
+                name = name.replace("\"","''")
+            
+                pak = vpk.open(vpkpath)
+
+                sl = spawnlist.Spawnlist(name,id=id)
+
+                models = []
+                for pakfile in pak:
+                    if pakfile.endswith(".mdl"):
+                        models.append(pakfile)
+
+                populateSpawnlist(sl,models)
+
+                saveSpawnlist(sl,path)
 
 def main():
     if dialog.ok_cancel_dialog("Select your spawnlist folder (Usually garrysmod/settings/spawnlist).",caption=CAPTION):
         path = dialog.dir_dialog(caption=CAPTION,defaultPath=config.get("DEFAULT","PreviousSpawnlistDirectory",fallback=""))
         if path:
-            config["DEFAULT"]["PreviousSpawnlistDirectory"] = os.path.dirname(path)
+            shouldRun = True
+            while shouldRun:
+                workItHarderDoItBetter(path)
 
-            files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
-            files = sorted(files)
-
-            lastFile = files[-1]
-            strid = lastFile[0:3]
-            id = int(strid) + 1
-
-            if dialog.ok_cancel_dialog("Select the _dir.vpk file to make a spawnlist from.",caption=CAPTION):
-                vpkpath = dialog.open_dialog(caption=CAPTION,wildcard="Valve Pak _dir File (*_dir.vpk)|*_dir.vpk",defaultDir=config.get("DEFAULT","PreviousVPKDirectory",fallback=""))
-                if vpkpath:
-                    config["DEFAULT"]["PreviousVPKDirectory"] = os.path.dirname(vpkpath)
-                    name = dialog.text_entry_dialog(message="Name your spawnlist.",caption=CAPTION)
-                    if name and (not name==""):
-                        name = name.replace("\"","''")
-                    
-                        pak = vpk.open(vpkpath)
-
-                        sl = spawnlist.Spawnlist(name,id=id)
-
-                        models = []
-                        for pakfile in pak:
-                            if pakfile.endswith(".mdl"):
-                                models.append(pakfile)
-
-                        populateSpawnlist(sl,models)
-
-                        saveSpawnlist(sl,path)
-
-    with open("PreviousDirectories.cfg","w") as f:
-        config.write(f)
+                with open("PreviousDirectories.cfg","w") as f:
+                    config.write(f)
+                
+                shouldRun = dialog.yes_no_dialog("Generate another spawnlist?",caption=CAPTION)
 
 
 if __name__ == "__main__":

@@ -66,3 +66,9 @@ def number_entry_dialog(message="",prompt="",caption="",default=0,min=-214748364
         dialog.ShowModal()
         response = dialog.GetValue()
     return response
+
+def yes_no_dialog(message, caption=""):
+    style = wx.YES_NO | wx.CENTRE | wx.ICON_QUESTION | wx.YES_DEFAULT
+    with wx.MessageDialog(None,message,caption=caption,style=style) as dialog:
+        response = dialog.ShowModal()
+    return response == wx.ID_YES
