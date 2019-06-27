@@ -24,6 +24,8 @@ class Spawnlist:
 
         self.addChild(child)
 
+        return child
+
     def getNextID(self):
         if(len(self.children) > 0):
             return self.children[-1].id + 1
