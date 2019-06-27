@@ -2,10 +2,10 @@ import wx
 
 app = wx.App(None)
 
-def open_dialog(caption="Open File",wildcard="All Files|*.*"):
+def open_dialog(caption="Open File",wildcard="All Files|*.*",defaultDir=""):
     style = wx.FD_OPEN | wx.FD_FILE_MUST_EXIST
     path = None
-    with wx.FileDialog(None, caption, wildcard=wildcard, style=style) as dialog:
+    with wx.FileDialog(None, caption, wildcard=wildcard, style=style, defaultDir=defaultDir) as dialog:
         if dialog.ShowModal() == wx.ID_OK:
             path = dialog.GetPath()
     return path
@@ -25,10 +25,10 @@ def save_dialog(data, caption="Save File", wildcard="All Files|*.*"):
             return False
     return True
 
-def dir_dialog(caption="Open Folder"):
+def dir_dialog(caption="Open Folder",defaultPath=""):
     style = wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST
     path = None
-    with wx.DirDialog(None,message=caption,style=style) as dialog:
+    with wx.DirDialog(None,message=caption,style=style,defaultPath=defaultPath) as dialog:
         if dialog.ShowModal() == wx.ID_CANCEL:
             return None
         path = dialog.GetPath()
