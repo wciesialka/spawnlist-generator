@@ -1,4 +1,4 @@
-![Version 1.0](https://img.shields.io/badge/Version-1.0-informational.svg) [![Python 3.7](https://img.shields.io/badge/Python-3.7-blue.svg)](https://www.python.org/downloads/release/python-373/) [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+![Version 1.3](https://img.shields.io/badge/Version-1.0-informational.svg) [![Python 3.7](https://img.shields.io/badge/Python-3.7-blue.svg)](https://www.python.org/downloads/release/python-373/) [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 # Garry's Mod Spawnlist Generator
 
