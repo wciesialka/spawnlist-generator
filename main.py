@@ -16,7 +16,7 @@ UNSORTED_KEY = "Other"
 FILE_SEPERATOR_R = re.compile(r"[\/\\]")
 SANITISER_R = re.compile(r"[\<\>\:\"\/\\\|\?\*\s\'\`\_\+\=\!\@\#\$\%\^\&\;\,\.\~]")
 
-def populateSpawnlist(sl,modelList,i=1):
+def populateSpawnlist(sl,modelList,i=1,strictTo=None):
 
     n = i + 2
 
@@ -26,6 +26,9 @@ def populateSpawnlist(sl,modelList,i=1):
 
     for mdl in modelList:
         split = FILE_SEPERATOR_R.split(mdl)
+
+        if strictTo and (not split[i-1] == strictTo):
+            continue
 
         if len(split) > n:
             if not split[i] in childrenToCreate:
@@ -41,7 +44,7 @@ def populateSpawnlist(sl,modelList,i=1):
     
     for childToCreate in childrenToCreate:
         child = sl.createChild(childToCreate)
-        populateSpawnlist(child,modelList,i=i+1)
+        populateSpawnlist(child,modelList,i=i+1,strictTo=childToCreate)
 
     od = collections.OrderedDict(sorted(models.items(), key=lambda t: t[0]))
 
