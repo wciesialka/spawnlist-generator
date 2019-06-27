@@ -4,6 +4,12 @@ import spawnlist
 import re
 import collections
 import os
+import configparser
+
+config = configparser.ConfigParser()
+config['DEFAULT'] = {"PreviousSpawnlistDirectory": "",
+                     "PreviousVPKDirectory": ""}
+config.read("PreviousDirectories.cfg")
 
 CAPTION = "Spawnlist Generator"
 UNSORTED_KEY = "Other"
@@ -12,8 +18,10 @@ SANITISER_R = re.compile(r"[\<\>\:\"\/\\\|\?\*\s\'\`\_\+\=\!\@\#\$\%\^\&\;\,\.\~
 
 def main():
     if dialog.ok_cancel_dialog("Select your spawnlist folder (Usually garrysmod/settings/spawnlist).",caption=CAPTION):
-        path = dialog.dir_dialog(caption=CAPTION)
+        path = dialog.dir_dialog(caption=CAPTION,defaultPath=config.get("DEFAULT","PreviousSpawnlistDirectory",fallback=""))
         if path:
+            config["DEFAULT"]["PreviousSpawnlistDirectory"] = os.path.dirname(path)
+
             files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
             files = sorted(files)
 
@@ -22,8 +30,9 @@ def main():
             id = int(strid) + 1
 
             if dialog.ok_cancel_dialog("Select the _dir.vpk file to make a spawnlist from.",caption=CAPTION):
-                vpkpath = dialog.open_dialog(caption=CAPTION,wildcard="Valve Pak _dir File (*_dir.vpk)|*_dir.vpk")
+                vpkpath = dialog.open_dialog(caption=CAPTION,wildcard="Valve Pak _dir File (*_dir.vpk)|*_dir.vpk",defaultDir=config.get("DEFAULT","PreviousVPKDirectory",fallback=""))
                 if vpkpath:
+                    config["DEFAULT"]["PreviousVPKDirectory"] = os.path.dirname(vpkpath)
                     name = dialog.text_entry_dialog(message="Name your spawnlist.",caption=CAPTION)
                     if name and (not name==""):
                         filename = f"{id:03d}-" + SANITISER_R.sub("-",name) + ".txt"
@@ -59,6 +68,8 @@ def main():
                                 dialog.error_dialog("Failed to save spawnlist to file!",caption=CAPTION)
                             else:
                                 dialog.ok_dialog("Successfully saved spawnlist!",caption=CAPTION)
+    with open("PreviousDirectories.cfg","w") as f:
+        config.write(f)
 
 
 if __name__ == "__main__":
