@@ -29,20 +29,23 @@ def populateSpawnlist(sl,modelList,i=1,strictTo=None):
         split = FILE_SEPERATOR_R.split(mdl)
         length = len(split)
 
-        if strictTo and (not strictTo in split):
+        if i >= length:
             continue
-        else:
-            if length == i+1:
-                unsorted.append(mdl)
-                toRemove.append(j)
-            elif length == n:
-                if not split[i] in models:
-                    models[split[i]] = []
-                models[split[i]].append(mdl)
-                toRemove.append(j)
-            elif length > n:
-                if not split[i] in childrenToCreate:
-                    childrenToCreate.append(split[i])
+        elif strictTo:
+            if (not strictTo == split[i-1]):
+                continue
+
+        if length == i+1:
+            unsorted.append(mdl)
+            toRemove.append(j)
+        elif length == n:
+            if not split[i] in models:
+                models[split[i]] = []
+            models[split[i]].append(mdl)
+            toRemove.append(j)
+        elif length > n:
+            if not split[i] in childrenToCreate:
+                childrenToCreate.append(split[i])
 
     toRemove = sorted(toRemove,reverse=True)
 
