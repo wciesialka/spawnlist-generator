@@ -27,30 +27,31 @@ def populateSpawnlist(sl,modelList,i=1,strictTo=None):
 
     for j,mdl in enumerate(modelList):
         split = FILE_SEPERATOR_R.split(mdl)
+        length = len(split)
 
-        if strictTo and (not split[i-1] == strictTo):
+        if strictTo and (not strictTo in split):
             continue
         else:
-            if len(split) == n-1:
+            if length == i+1:
                 unsorted.append(mdl)
                 toRemove.append(j)
-            elif len(split) == n:
+            elif length == n:
                 if not split[i] in models:
                     models[split[i]] = []
                 models[split[i]].append(mdl)
                 toRemove.append(j)
-            elif len(split) > n:
+            elif length > n:
                 if not split[i] in childrenToCreate:
                     childrenToCreate.append(split[i])
 
-    toRemove.reverse()
+    toRemove = sorted(toRemove,reverse=True)
 
     for j in toRemove:
         modelList.pop(j)
 
     for childToCreate in childrenToCreate:
         child = sl.createChild(childToCreate)
-        populateSpawnlist(child,modelList,i=i+1,strictTo=childToCreate)
+        populateSpawnlist(child,modelList,i+1,childToCreate)
 
     od = collections.OrderedDict(sorted(models.items(), key=lambda t: t[0]))
 
