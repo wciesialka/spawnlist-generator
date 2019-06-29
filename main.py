@@ -102,9 +102,6 @@ def workItHarderDoItBetter(path):
 
                 structure = createStructure(models)
 
-                with open("structure_" + name + ".txt","w") as f:
-                    f.write(str(structure))
-
                 populateSpawnlist(sl,structure.getSubPath("models"))
 
                 saveSpawnlist(sl,path)
