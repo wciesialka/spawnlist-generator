@@ -1,28 +1,21 @@
-def dict_as_valve_dict(d,initial_indentation=0):
-    lines = []
-    indentation = initial_indentation
-    for k in d:
-        v = d[k]
-        line = ""
-        for _ in range(indentation):
-            line += "\t"
-        if type(v) is dict:
-            line += f"\"{k}\""
-            lines.append(line)
-            line = ""
-            for _ in range(indentation):
-                line += "\t"
-            line += "{"
-            lines.append(line)
-            morelines = dict_as_valve_dict(v,initial_indentation = indentation + 1)
-            for line in morelines:
-                lines.append(line)
-            line = ""
-            for _ in range(indentation):
-                line += "\t"
-            line += "}"
-            lines.append(line)
+def __s(v,t=0):
+    s = "".join(["\t" for i in range(t)]) + str(v) + "\n"
+    return s
+
+def __dtkv(dic,dicname,level):
+    kv = __s(f"\"{dicname}\"",level-1)
+    kv += __s("{",level-1)
+    
+    for key in dic:
+        value = dic[key]
+        if type(value) is dict:
+            kv += __dtkv(value,key,level+1)
         else:
-            line += f"\"{k}\"\t\"{v}\""
-            lines.append(line)
-    return lines
+            kv += __s(f"\"{key}\"\t\"{value}\"",level)
+
+    kv += __s("}",level-1)
+
+    return kv
+
+def DictToKeyValues(dic):
+    return __dtkv(dic,"TableToKeyValues",1)

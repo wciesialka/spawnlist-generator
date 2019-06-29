@@ -1,6 +1,7 @@
 import vpk
 import dialog
 import spawnlist
+import modelpath
 import re
 import collections
 import os
@@ -16,88 +17,62 @@ UNSORTED_KEY = "Other"
 FILE_SEPERATOR_R = re.compile(r"[\/\\]")
 SANITISER_R = re.compile(r"[\<\>\:\"\/\\\|\?\*\s\'\`\_\+\=\!\@\#\$\%\^\&\;\,\.\~]")
 
-def populateSpawnlist(sl,modelList,i=1,strictTo=None):
+def populateSpawnlist(sl,structure):
+    models = structure.models
+    subpaths = structure.subpaths
+    for subpath_key in subpaths:
+        subpath = subpaths[subpath_key]
+        
+        if len(subpath.models) > 0:
+            sl.addHeader(subpath_key)
+            toPop = []
+            for i,model in enumerate(subpath.models):
+                sl.addModel(model)
+                toPop.append(i)
+            for i in sorted(toPop,reverse=True):
+                subpath.popModel(i)
+        if len(subpath.subpaths) > 0:
+            child = sl.createChild(subpath_key)
+            populateSpawnlist(child,subpath)
 
-    n = i + 2
+    if(len(models) > 0):
+        sl.addHeader(structure.key)
 
-    unsorted = []
-    models = {}
-    childrenToCreate = []
-    toRemove = []
-
-    for j,mdl in enumerate(modelList):
-        split = FILE_SEPERATOR_R.split(mdl)
-        length = len(split)
-
-        if i >= length:
-            continue
-        elif strictTo:
-            if (not strictTo == split[i-1]):
-                continue
-
-        if length == i+1:
-            unsorted.append(mdl)
-            toRemove.append(j)
-        elif length == n:
-            if not split[i] in models:
-                models[split[i]] = []
-            models[split[i]].append(mdl)
-            toRemove.append(j)
-        elif length > n:
-            if not split[i] in childrenToCreate:
-                childrenToCreate.append(split[i])
-
-    toRemove = sorted(toRemove,reverse=True)
-
-    for j in toRemove:
-        modelList.pop(j)
-
-    for childToCreate in childrenToCreate:
-        child = sl.createChild(childToCreate)
-        populateSpawnlist(child,modelList,i+1,childToCreate)
-
-    od = collections.OrderedDict(sorted(models.items(), key=lambda t: t[0]))
-
-    if len(unsorted) > 0:
-        od[UNSORTED_KEY] = unsorted
-
-    for k in od:
-        sl.addHeader(k)
-        v = od[k]
-        if not type(v) is str:
-            for m in od[k]:
-                sl.addModel(m)
-        else:
-            sl.addModel(v)
+        for model in models:
+            sl.addModel(model)
 
 def sanitiseName(name):
     return SANITISER_R.sub("-",name)
 
+
+def createStructure(modelList):
+    inorder = sorted(modelList,key=lambda model: (len(FILE_SEPERATOR_R.findall(model)), str.lower))
+    structure = modelpath.ModelPath("root")
+    for model in inorder:
+        structure.addModel(model)
+    return structure
+
+TaskSuccessful = True
+
 def saveSpawnlist(sl,path,isChildProcess=False):
-    names = [sanitiseName(sl.name)]
-    slp = sl.parent
-    while not slp == None:
-        names.append(sanitiseName(slp.name))
-        slp = slp.parent 
-    cleanName = ""
-    for name in names[::-1]:
-        cleanName += name + "-"
-    filename = f"{sl.id:03d}-" + cleanName[:-1] + ".txt"
+    global TaskSuccessful
+    filename = f"{sl.id:03d}-" + sanitiseName(sl.name) + ".txt"
     with open(os.path.join(path,filename),"w") as f:
         try:
-            f.write(sl.as_string())
+            f.write(str(sl))
         except IOError:
+            if TaskSuccessful:
+                TaskSuccessful = False
             if isChildProcess:
                 dialog.error_dialog("Failed to save child spawnlist to file!",caption=CAPTION)
             else:
                 dialog.error_dialog("Failed to save main spawnlist to file!",caption=CAPTION)
-        else:
-            if not isChildProcess:
-                dialog.ok_dialog("Successfully saved spawnlist!",caption=CAPTION)
+
     for child in sl.children:
         saveSpawnlist(child,path,isChildProcess=True)
 
 def workItHarderDoItBetter(path):
+    global TaskSuccessful
     config["DEFAULT"]["PreviousSpawnlistDirectory"] = os.path.dirname(path)
 
     files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
@@ -106,6 +81,7 @@ def workItHarderDoItBetter(path):
     lastFile = files[-1]
     strid = lastFile[0:3]
     id = int(strid) + 1
+    spawnlist.Spawnlist.ID = id
 
     if dialog.ok_cancel_dialog("Select the _dir.vpk file to make a spawnlist from.",caption=CAPTION):
         vpkpath = dialog.open_dialog(caption=CAPTION,wildcard="Valve Pak _dir File (*_dir.vpk)|*_dir.vpk",defaultDir=config.get("DEFAULT","PreviousVPKDirectory",fallback=""))
@@ -117,17 +93,23 @@ def workItHarderDoItBetter(path):
             
                 pak = vpk.open(vpkpath)
 
-                sl = spawnlist.Spawnlist(name,id=id)
+                sl = spawnlist.Spawnlist(name)
 
                 models = []
                 for pakfile in pak:
                     if pakfile.endswith(".mdl"):
                         models.append(pakfile)
 
-                models = sorted(models,key=lambda model: len(FILE_SEPERATOR_R.findall(model)))
-                populateSpawnlist(sl,models)
+                structure = createStructure(models)
+
+                populateSpawnlist(sl,structure.getSubPath("models"))
 
                 saveSpawnlist(sl,path)
+
+                if TaskSuccessful:
+                    dialog.ok_dialog("Successfully saved spawnlist!",caption=CAPTION)
+                else:
+                    dialog.ok_dialog("Could not successfully save spawnlist!",caption=CAPTION)
 
 def main():
     if dialog.ok_cancel_dialog("Select your spawnlist folder (Usually garrysmod/settings/spawnlist).",caption=CAPTION):

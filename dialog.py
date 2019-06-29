@@ -72,3 +72,6 @@ def yes_no_dialog(message, caption=""):
     with wx.MessageDialog(None,message,caption=caption,style=style) as dialog:
         response = dialog.ShowModal()
     return response == wx.ID_YES
+
+def progress_dialog(message, caption="", maximum=100):
+    return wx.GenericProgressDialog(caption,message,maximum=maximum)
