@@ -18,9 +18,9 @@ FILE_SEPERATOR_R = re.compile(r"[\/\\]")
 SANITISER_R = re.compile(r"[\<\>\:\"\/\\\|\?\*\s\'\`\_\+\=\!\@\#\$\%\^\&\;\,\.\~]")
 
 def populateSpawnlist(sl,structure):
-    models = structure.models
+    models = sorted(structure.models)
     subpaths = structure.subpaths
-    for subpath_key in subpaths:
+    for subpath_key in sorted(subpaths.keys()):
         subpath = subpaths[subpath_key]
         
         if len(subpath.models) > 0:
