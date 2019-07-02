@@ -1,7 +1,7 @@
 import vpk
-import dialog
-import spawnlist
-import modelpath
+import src.dialog as dialog
+import src.spawnlist as spawnlist
+import src.modelpath as modelpath
 import re
 import collections
 import os
@@ -43,14 +43,6 @@ def populateSpawnlist(sl,structure):
 
 def sanitiseName(name):
     return SANITISER_R.sub("-",name)
-
-
-def createStructure(modelList):
-    inorder = sorted(modelList,key=lambda model: (len(FILE_SEPERATOR_R.findall(model)), str.lower))
-    structure = modelpath.ModelPath("root")
-    for model in inorder:
-        structure.addModel(model)
-    return structure
 
 TaskSuccessful = True
 
@@ -95,12 +87,11 @@ def workItHarderDoItBetter(path):
 
                 sl = spawnlist.Spawnlist(name)
 
-                models = []
+                structure = modelpath.ModelPath("root")
+
                 for pakfile in pak:
                     if pakfile.endswith(".mdl"):
-                        models.append(pakfile)
-
-                structure = createStructure(models)
+                        structure.addModel(pakfile)
 
                 populateSpawnlist(sl,structure.getSubPath("models"))
 

@@ -1,4 +1,4 @@
-import valvedict
+import src.valvedict as valvedict
 
 class Spawnlist:
 
