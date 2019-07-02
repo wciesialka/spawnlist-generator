@@ -1,7 +1,7 @@
 import vpk
-import dialog
-import spawnlist
-import modelpath
+import src.dialog as dialog
+import src.spawnlist as spawnlist
+import src.modelpath as modelpath
 import re
 import collections
 import os
