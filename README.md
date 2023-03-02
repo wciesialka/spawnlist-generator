@@ -17,7 +17,7 @@ Enter the directory and use `pipenv run main.py` and follow the instructions fro
 
 ## Authors
 
-- William Ciesialka
+- Willow Ciesialka
 
 ## Thanks to
 
