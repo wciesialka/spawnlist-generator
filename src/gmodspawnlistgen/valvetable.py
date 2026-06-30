@@ -24,7 +24,7 @@ class ValveTableParser:
     @property
     def name(self):
         return self.__name
-    
+
     @name.setter
     def name(self, new_name: str):
         self.__name = new_name
@@ -116,7 +116,7 @@ class ValveTableParser:
     def parse(name: str, data: dict):
         stringstream = StringIO("")
         ValveTableParser.__parse_node(stringstream, name, data, depth=0)
-        return stringstream.read()
+        return stringstream.getvalue()
     
     @staticmethod
     def __parse_node(sstream: StringIO, name: str, data: dict, depth: int):
