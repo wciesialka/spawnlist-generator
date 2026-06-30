@@ -1,19 +1,23 @@
-![Version 1.7](https://img.shields.io/badge/Version-1.7-informational.svg) [![Python 3.7](https://img.shields.io/badge/Python-3.7-blue.svg)](https://www.python.org/downloads/release/python-373/) [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
 # Garry's Mod Spawnlist Generator
 
-A small program in Python that allows you to generate a spawnlist for the game Garry's Mod using a VPK file from a mountable Source game.
+Create GMod Spawnlists for any mountable Source game.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.7+
-- Pipenv
+- Python 3.13+
+- [Python VPK Libary](https://github.com/ValvePython/vpk)
+
+### Installing
+
+- Clone the repository
+- Enter the directory with `cd spawnlist-generator`
+- Create a virtual environment using `python3 -m venv env/`
+- Activate the environment using `source env/bin/activate`
+- Install using `pip install .`
 
 ### Running
-
-Enter the directory and use `pipenv run main.py` and follow the instructions from there.
 
 ## Authors
 
@@ -21,9 +25,8 @@ Enter the directory and use `pipenv run main.py` and follow the instructions fro
 
 ## Thanks to
 
-- PipEnv team
-- [Rossen Georgiev](https://github.com/rossengeorgiev) for his [VPK Libary](https://github.com/ValvePython/vpk)
+- VPK Library Team
 
 ## License
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
+This project is licensed under GNU General Public License v3.0 - see [LICENSE](LICENSE) for details.
