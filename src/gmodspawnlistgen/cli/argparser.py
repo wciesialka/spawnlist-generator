@@ -15,19 +15,19 @@ class SpawnlistGeneratorArgParser:
                                         "If not provided, the app will use config settings "\
                                         "or attempt to find Steam on it's own. "\
                                         "Will overwrite config setting if provided.",
-                                   type=existing_file_path,
+                                   type=existing_directory_path,
                                    default=None
                                    )
           self.__parser.add_argument(
                                    "--gmod-path", 
                                    dest="gmod_path", 
                                    metavar="GARRYS_MOD_INSTALL_PATH", 
-                                   help="Specify this flag to explicitly tell the app where "\
-                                        "Garry's Mod's executable file can be found. "\
+                                   help="Specify this flag to explicitly tell the app where the "\
+                                        "Garry's Mod's root directory can be found. "\
                                         "If not provided, the app will use config settings "\
-                                        "or attempt to find Steam on it's own. "\
+                                        "or attempt to use Steam to find it on it's own. "\
                                         "Will overwrite config setting if provided.",
-                                   type=existing_file_path,
+                                   type=existing_directory_path,
                                    default=None
                                    )
           self.__parser.add_argument(
