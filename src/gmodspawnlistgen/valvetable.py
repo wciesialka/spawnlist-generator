@@ -2,6 +2,7 @@ import re
 from pathlib import Path
 from collections import deque
 from io import StringIO
+from gmodspawnlistgen.exceptions import ImproperTableFormatException
 
 # Matches keys and values, with or without quotes, separated by any whitespace
 KEY_PAIR_PATTERN = re.compile(r'(?:"([^"]*)"|([^"\s]+))\s+(?:"([^"]*)"|([^"\s]+))')
