@@ -9,25 +9,38 @@ KEY_PAIR_PATTERN = re.compile(r'(?:"([^"]*)"|([^"\s]+))\s+(?:"([^"]*)"|([^"\s]+)
 # Matches a table name, with or without quotes
 TABLE_NAME_PATTERN = re.compile(r'(?:"([^"]*)"|([^"\s]+))')
 
+# Matches names starting with numerics to put them in proper order
+NUMERIC_FIRST_PATTERN = re.compile(r'^(-?\d*\.?\d+)?(.*)$')
+
+def _sort_numeric_first_key_function(string: str):
+    groups = NUMERIC_FIRST_PATTERN.fullmatch(string)
+    if not groups:
+        return (1, 0, string)
+
+    numeric = groups[1]
+    alphanumeric = str(groups[2])
+    if numeric:
+        return (0, float(numeric), alphanumeric)
+    else:
+        return (1, 0, alphanumeric)
+
+def _dict_as_sorted_pairs(dictionary):
+    return sorted(
+                  [(key, value) for key, value in dictionary.items()], 
+                  key=lambda pair: _sort_numeric_first_key_function(pair[0])
+           )
+
 class ImproperTableFormatException:
 
     def __init__(self, message):
         super().__init__(message)
 
-class ValveTableParser:
+class ValveTableFile:
 
     def __init__(self, filepath: Path, mode = "r"):
         self.__filepath = filepath.resolve()
         self.__mode = mode
         self.__file = None
-
-    @property
-    def name(self):
-        return self.__name
-
-    @name.setter
-    def name(self, new_name: str):
-        self.__name = new_name
 
     def __enter__(self):
         if 'w' in self.__mode:
@@ -102,20 +115,20 @@ class ValveTableParser:
     
     def loads(self):
         name, data = self.load()
-        return ValveTableParser.parse(name, data)
+        return ValveTableFile.dict_to_table(name, data)
 
     def dump(self, name: str, data: dict):
         if self.__file is None:
             raise RuntimeError("Cannot write to an unopened Valve Table File.")
         if not self.__file.writable():
             raise RuntimeError("Opened Valve Table File is not writeable.")
-        file_contents = ValveTableParser.parse(name, data)
+        file_contents = ValveTableFile.dict_to_table(name, data)
         self.__file.write(file_contents)
     
     @staticmethod
-    def parse(name: str, data: dict):
+    def dict_to_table(name: str, data: dict):
         stringstream = StringIO("")
-        ValveTableParser.__parse_node(stringstream, name, data, depth=0)
+        ValveTableFile.__parse_node(stringstream, name, data, depth=0)
         return stringstream.getvalue()
     
     @staticmethod
@@ -126,10 +139,16 @@ class ValveTableParser:
         sstream.write(f'{indent}"{str(name)}"\n')
         sstream.write(f'{indent}{{\n')
 
-        for key, value in data.items():
+
+        for key, value in _dict_as_sorted_pairs(data):
             if isinstance(value, dict):
-                ValveTableParser.__parse_node(sstream, key, value, depth+1)
+                ValveTableFile.__parse_node(sstream, key, value, depth+1)
+            # lists are formatted as tables with indices as key values,
+            #  so replicate that here with dictionaries
+            elif isinstance(value, list) or isinstance(value, tuple):
+                ValveTableFile.__parse_node(sstream, key, {str(i): v for i,v in enumerate(value)}, depth+1)
             else:
                 sstream.write(f'{indent}\t"{str(key)}"\t\t"{str(value)}"\n')
 
         sstream.write(f'{indent}}}\n')
+
