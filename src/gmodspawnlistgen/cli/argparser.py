@@ -11,11 +11,12 @@ class SpawnlistGeneratorArgParser:
                                    dest="steam_path", 
                                    metavar="STEAM_INSTALL_PATH", 
                                    help="Specify this flag to explicitly tell the app where "\
-                                        "Steam's executable file can be found. "\
+                                        "Steam's root directory can be found. "\
                                         "If not provided, the app will use config settings "\
                                         "or attempt to find Steam on it's own. "\
                                         "Will overwrite config setting if provided.",
-                                   type=existing_file_path
+                                   type=existing_file_path,
+                                   default=None
                                    )
           self.__parser.add_argument(
                                    "--gmod-path", 
@@ -26,7 +27,8 @@ class SpawnlistGeneratorArgParser:
                                         "If not provided, the app will use config settings "\
                                         "or attempt to find Steam on it's own. "\
                                         "Will overwrite config setting if provided.",
-                                   type=existing_file_path
+                                   type=existing_file_path,
+                                   default=None
                                    )
           self.__parser.add_argument(
                                    "--config-file",
@@ -36,7 +38,8 @@ class SpawnlistGeneratorArgParser:
                                         "to read and write it's own config file. "\
                                         f"If not provided, defaults to the {APP_NAME} directory "\
                                         "in your platform's default configuration file directory.",
-                                   type=readable_writeable_path
+                                   type=readable_writeable_path,
+                                   default=None
           )
 
      def parse_args(self, args = None, namespace = None):
