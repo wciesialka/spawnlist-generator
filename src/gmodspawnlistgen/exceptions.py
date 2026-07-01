@@ -1,9 +1,15 @@
-class InvalidAppPathException(Exception):
+class InvalidPathException(Exception):
+
+    def __init__(self, path, reason):
+        super().__init__(f"Path \"{path}\" invalid: {reason}")
+        self.path = path
+        self.reason = reason
+
+class InvalidAppPathException(InvalidPathException):
 
     def __init__(self, app, path, reason):
-        super().__init__(f"Given {app} path \"{path}\" invalid: {why}")
+        super().__init__(path, f"Invalid {app} path: {reason}")
         self.app = app
-        self.path = path
         self.reason = reason
 
 class InvalidSteamPathException(InvalidAppPathException):
