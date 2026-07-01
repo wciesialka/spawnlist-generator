@@ -30,11 +30,6 @@ def _dict_as_sorted_pairs(dictionary):
                   key=lambda pair: _sort_numeric_first_key_function(pair[0])
            )
 
-class ImproperTableFormatException:
-
-    def __init__(self, message):
-        super().__init__(message)
-
 class ValveTableFile:
 
     def __init__(self, filepath: Path, mode = "r"):
