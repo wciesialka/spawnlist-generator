@@ -49,13 +49,13 @@ class ValveTableFile:
             self.__file.close()
             self.__file = None
     
-    def load(self) -> tuple[str, dict]:
+    def read(self) -> tuple[str, dict]:
         '''
         Load a Valve Table file, returning the name and dictionary.
 
         :raises RuntimeError: RuntimeError raised if file is unopened.
         :raises ImproperTableFormatException: ImproperTableFormatException raised if table is of improper format.
-        :return: _description_
+        :return: A tuple of length two containing the name of the table as a string and the contents of the table as a dictionary in that order.
         :rtype: tuple[str, dict]
         '''
         if self.__file is None:
@@ -108,12 +108,8 @@ class ValveTableFile:
                         groups = table_name_match.groups()
                         next_table_name = groups[0] or groups[1]
         return (name, root_table)
-    
-    def loads(self):
-        name, data = self.load()
-        return ValveTableFile.dict_to_table(name, data)
 
-    def dump(self, name: str, data: dict):
+    def write(self, name: str, data: dict):
         if self.__file is None:
             raise RuntimeError("Cannot write to an unopened Valve Table File.")
         if not self.__file.writable():
