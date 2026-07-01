@@ -42,5 +42,15 @@ class SpawnlistGeneratorArgParser:
                                    default=None
           )
 
+          self.__parser.add_argument(
+                                   "target-vpk",
+                                   dest="target_vpk",
+                                   help="The file path for the _dir.vpk file you wish to generate a spawnlist with. "\
+                                        "This is typically found in the 'appname' folder in the game's install path. "\
+                                        "For example, Garry's Mod's is located in \"../garrysmod/garrysmod_dir.vpk\". "\
+                                        "Some games may have more than one _dir.vpk file.",
+                                   type=existing_readable_file_path
+          )
+
      def parse_args(self, args = None, namespace = None):
           return self.__parser.parse_args(args, namespace)
