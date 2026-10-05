@@ -1,5 +1,5 @@
 APP_NAME = "gmod-spawnlist-generator"
-__VERSION_INFO = ("2026", "6", "30")
+__VERSION_INFO = ("2026", "10", "5")
 __version__ = ".".join(__VERSION_INFO)
 
 APP_IDS = [
