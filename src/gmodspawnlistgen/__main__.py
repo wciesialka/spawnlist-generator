@@ -2,6 +2,7 @@ from gmodspawnlistgen.valvetable import ValveTableFile
 from gmodspawnlistgen.config import SpawnlistGeneratorConfig
 from gmodspawnlistgen.steam import SteamFileHandler
 from gmodspawnlistgen.cli.argparser import SpawnlistGeneratorArgParser
+from gmodspawnlistgen.generator import SpawnlistGenerator
 
 def main():
     parser = SpawnlistGeneratorArgParser()
@@ -50,7 +51,11 @@ def main():
             raise RuntimeError("Could not find Garry's Mod. Please provide the install path using the --gmod-path flag.")
     
     target_vpk = args.target_vpk
-
+    spawnlist_name = args.spawnlist_name
+    
+    generator = SpawnlistGenerator(config)
+    spawnlist = generator.spawnlist_from_vpk(spawnlist_name, target_vpk)
+    generator.save_spawnlist(spawnlist)
 
 if __name__ == "__main__":
     main()

@@ -43,6 +43,13 @@ class SpawnlistGeneratorArgParser:
           )
 
           self.__parser.add_argument(
+                                   "spawnlist-name",
+                                   dest="spawnlist_name",
+                                   help="The base name for your new spawnlist.",
+                                   type=str
+          )
+
+          self.__parser.add_argument(
                                    "target-vpk",
                                    dest="target_vpk",
                                    help="The file path for the _dir.vpk file you wish to generate a spawnlist with. "\
