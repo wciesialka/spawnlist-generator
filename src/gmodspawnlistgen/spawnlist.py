@@ -31,24 +31,24 @@ class Spawnlist:
         return child
 
     def add_header(self, text: str):
-        self.contents[self.n_contents] = {
+        self.contents[f"{self.n_contents}"] = {
             "type": "header",
             "text": text
         }
         self.n_contents += 1
     
     def add_model(self, path: str):
-        self.contents[self.n_contents] = {
+        self.contents[f"{self.n_contents}"] = {
             "type": "model",
-            "model": "path"
+            "model": path
         }
         self.n_contents += 1
     
     def as_dict(self):
         return {
-            "parentid": self.parent_id,
+            "parentid": str(self.parent_id),
             "icon": self.icon,
-            "id": self.id,
+            "id": str(self.id),
             "contents": self.contents,
             "name": self.name,
             "version": "3"

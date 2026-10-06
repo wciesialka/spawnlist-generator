@@ -51,16 +51,28 @@ class SpawnlistGeneratorConfig:
     def read(self):
         if not self.config_file_readable():
             raise RuntimeError("Cannot read from non-existent or non-readable config file.")
-        config = config.ConfigParser()
+        config = configparser.ConfigParser()
         with open(self.__config_path, "r", encoding="utf-8") as config_file:
             config.read_file(config_file)
+    
         self.steam_path = Path(config['Steam']['InstallPath'])
         self.gmod_path = Path(config["Garry's Mod"]['InstallPath'])
     
     def write(self):
         config = configparser.ConfigParser()
-        config['Steam']['InstallPath'] = self.steam_path
-        config["Garry's Mod"]['InstallPath'] = self.gmod_path
+
+        if self.steam_path is not None:
+            config["Steam"] = {
+                'InstallPath': str(self.steam_path)
+            }    
+        
+        if self.gmod_path is not None:
+            config["Garry's Mod"] = {
+                'InstallPath': str(self.gmod_path)
+            }
+
+        self.__config_path.parent.mkdir(parents=True, exist_ok=True)
+        
         with open(self.__config_path, "w", encoding="utf-8") as config_file:
             config.write(config_file)
 
@@ -94,4 +106,4 @@ class SpawnlistGeneratorConfig:
         :return: The path to the config file. 
         :rtype: Path
         '''
-        return get_config_dir() / f"{config_name}.ini"
+        return SpawnlistGeneratorConfig.get_default_dir() / f"{config_name}.ini"

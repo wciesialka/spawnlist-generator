@@ -20,7 +20,8 @@ class SpawnlistGenerator:
     
     def get_latest_spawnlist_id(self):
         path = self.spawnlist_dir
-        files = sorted([f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))])
+        files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+        sorted_files = sorted(files, key=lambda f: int(f[:f.index('-')]))
         last_file = files[-1]
         last_id = last_file[:3]
         return int(last_id)

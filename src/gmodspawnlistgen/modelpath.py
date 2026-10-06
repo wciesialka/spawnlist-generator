@@ -20,19 +20,19 @@ class ModelPath:
             split_path = SPLIT_PATTERN.split(path)
         # Check if the path is split into multiple parts. If it is, we have to deal
         # with subpaths. If it isn't, we have a model and can add it normally.
-        if len(split) == 1:
+        if len(split_path) == 1:
             if not (path in self.models):
                 self.models.append(path)
         else:
             # We have to deal with subpaths recursively.
             # Start from the top-most path and work our way down.
             # Add sub-paths as needed.
-            if not (split[0] in self):
-                child_path = ModelPath(split[0])
+            if not (split_path[0] in self):
+                child_path = ModelPath(split_path[0])
                 self.add_subpath(child_path)
             else:
-                child_path = self.get_subpath(split[0])
-            child_path.add_model(path, split_path=split[1:])
+                child_path = self.get_subpath(split_path[0])
+            child_path.add_model(path, split_path=split_path[1:])
     
     def get_subpath(self, key: str) -> ModelPath:
         if key in self.subpaths:

@@ -1,6 +1,7 @@
 import os
 import sys
 import platform
+from functools import wraps
 from shutil import which
 from pathlib import Path
 from gmodspawnlistgen.exceptions import InvalidSteamPathException, NoSteamRootException
@@ -19,7 +20,7 @@ class SteamFileHandler:
     @root.setter
     def root(self, new_path):
         if new_path is None:
-            self.__executable_path = None
+            self.__root = None
             return
         if not isinstance(new_path, Path):
             raise TypeError(f"Executable Path must be type Path, not {type(new_path)}")
@@ -27,6 +28,7 @@ class SteamFileHandler:
             raise InvalidSteamPathException(new_path, "Given root directory path does not exist.")
         if not new_path.is_dir():
             raise InvalidSteamPathException(new_path, "Given root directory path is not a directory.")
+        self.__root = new_path
 
     def _requires_root(func):
         '''
@@ -34,10 +36,11 @@ class SteamFileHandler:
          
         :raise NoSteamRootException: If no root path exists, trying to call the function will raise a NoSteamRootException.
         '''
+        @wraps(func)
         def wrapper(self, *args, **kwargs):
             if not self.root:
                 raise NoSteamRootException(func)
-            func(self, *args, **kwargs)
+            return func(self, *args, **kwargs)
         return wrapper
 
     @_requires_root
@@ -117,7 +120,7 @@ class SteamFileHandler:
         return None
 
     @staticmethod
-    def get_default_steam_path(self) -> Path:
+    def get_default_steam_path() -> Path:
         '''
         Get the default Steam path, platform-specific. Not guaranteed to exist.
 

@@ -1,4 +1,5 @@
 from gmodspawnlistgen.exceptions import InvalidPathException
+from pathlib import Path
 from os import access, R_OK, W_OK, X_OK
 
 def existing_directory_path(path: Path):
@@ -8,7 +9,7 @@ def existing_directory_path(path: Path):
         except:
             raise TypeError(f"Must be type Path, not {type(path)}")
         else:
-            return readable_directory_path(path)
+            return existing_directory_path(path)
     if not path.exists():
         raise InvalidPathException(path, "Does not exist")
     if not path.is_dir():
@@ -22,7 +23,7 @@ def existing_file_path(path: Path):
         except:
             raise TypeError(f"Must be type Path, not {type(path)}")
         else:
-            return readable_directory_path(path)
+            return existing_file_path(path)
     if not path.exists():
         raise InvalidPathException(path, "Does not exist")
     if not path.is_file():
@@ -36,7 +37,7 @@ def existing_readable_file_path(path: Path):
         except:
             raise TypeError(f"Must be type Path, not {type(path)}")
         else:
-            return readable_directory_path(path)
+            return existing_readable_file_path(path)
     if not path.exists():
         raise InvalidPathException(path, "Does not exist")
     if not path.is_file():
@@ -52,7 +53,7 @@ def readable_writeable_path(path: Path):
         except:
             raise TypeError(f"Must be type Path, not {type(path)}")
         else:
-            return readable_directory_path(path)
+            return readable_writeable_path(path)
     if not access(path, W_OK):
         raise InvalidPathException(path, "Is not writeable")
     if not access(path, R_OK) and path.exists():

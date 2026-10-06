@@ -3,6 +3,7 @@ from gmodspawnlistgen.config import SpawnlistGeneratorConfig
 from gmodspawnlistgen.steam import SteamFileHandler
 from gmodspawnlistgen.cli.argparser import SpawnlistGeneratorArgParser
 from gmodspawnlistgen.generator import SpawnlistGenerator
+import vpk
 
 def main():
     parser = SpawnlistGeneratorArgParser()
@@ -25,8 +26,10 @@ def main():
         # If it doesn't, go searching.
     elif config.steam_path is None:
         steam_path = SteamFileHandler.get_default_steam_path()
+        config.steam_path = steam_path
     else:
         steam_path = config.steam_path
+    print(steam_path)
     
     gmod_path = args.gmod_path
     if gmod_path:
@@ -52,9 +55,11 @@ def main():
     
     target_vpk = args.target_vpk
     spawnlist_name = args.spawnlist_name
+
+    pak = vpk.open(target_vpk)
     
     generator = SpawnlistGenerator(config)
-    spawnlist = generator.spawnlist_from_vpk(spawnlist_name, target_vpk)
+    spawnlist = generator.spawnlist_from_vpk(spawnlist_name, pak)
     generator.save_spawnlist(spawnlist)
 
 if __name__ == "__main__":
