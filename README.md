@@ -1,19 +1,64 @@
-![Version 1.7](https://img.shields.io/badge/Version-1.7-informational.svg) [![Python 3.7](https://img.shields.io/badge/Python-3.7-blue.svg)](https://www.python.org/downloads/release/python-373/) [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
 # Garry's Mod Spawnlist Generator
 
-A small program in Python that allows you to generate a spawnlist for the game Garry's Mod using a VPK file from a mountable Source game.
+Create GMod Spawnlists for any mountable Source game.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.7+
-- Pipenv
+- Python 3.13+
+- [Python VPK Libary](https://github.com/ValvePython/vpk)
+
+### Installing
+
+- Clone the repository
+- Enter the directory with `cd spawnlist-generator`
+- Create a virtual environment using `python3 -m venv env/`
+- Activate the environment using `source env/bin/activate`
+- Install using `pip install .`
 
 ### Running
 
-Enter the directory and use `pipenv run main.py` and follow the instructions from there.
+```
+usage: gmod-spawnlist-gen [-h] [--steam-path STEAM_INSTALL_PATH]
+                          [--gmod-path GARRYS_MOD_INSTALL_PATH]
+                          [--config-file CONFIG_FILE_PATH]
+                          SPAWNLIST_NAME PATH_TO_VPK
+
+Create Garry's Mod spawnlists directly from mountable games' .vpk files.
+
+positional arguments:
+  SPAWNLIST_NAME        The base name for your new spawnlist.
+  PATH_TO_VPK           The file path for the _dir.vpk file you wish to
+                        generate a spawnlist with. This is typically found in
+                        the 'appname' folder in the game's install path. For
+                        example, Garry's Mod's is located in
+                        "../garrysmod/garrysmod_dir.vpk". Some games may have
+                        more than one _dir.vpk file.
+
+options:
+  -h, --help            show this help message and exit
+  --steam-path STEAM_INSTALL_PATH
+                        Specify this flag to explicitly tell the app where
+                        Steam's root directory can be found. If not provided,
+                        the app will use config settings or attempt to find
+                        Steam on it's own. Will overwrite config setting if
+                        provided.
+  --gmod-path GARRYS_MOD_INSTALL_PATH
+                        Specify this flag to explicitly tell the app where the
+                        Garry's Mod's root directory can be found. If not
+                        provided, the app will use config settings or attempt
+                        to use Steam to find it on it's own. Will overwrite
+                        config setting if provided.
+  --config-file CONFIG_FILE_PATH
+                        Specify this flag to explicitly tell the app where to
+                        read and write it's own config file. If not provided,
+                        defaults to the gmod-spawnlist-generator directory in
+                        your platform's default configuration file directory.
+
+The default location for the configuration file is dependent on your operating
+system.
+```
 
 ## Authors
 
@@ -21,9 +66,8 @@ Enter the directory and use `pipenv run main.py` and follow the instructions fro
 
 ## Thanks to
 
-- PipEnv team
-- [Rossen Georgiev](https://github.com/rossengeorgiev) for his [VPK Libary](https://github.com/ValvePython/vpk)
+- VPK Library Team
 
 ## License
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) for details.
+This project is licensed under GNU General Public License v3.0 - see [LICENSE](LICENSE) for details.
