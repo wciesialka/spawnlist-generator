@@ -1,11 +1,15 @@
 import argparse
 from gmodspawnlistgen.cli.parsertypes import *
 from gmodspawnlistgen import APP_NAME
+from gmodspawnlistgen.config import SpawnlistGeneratorConfig
 
 class SpawnlistGeneratorArgParser:
 
      def __init__(self):
-          self.__parser = argparse.ArgumentParser()
+          self.__parser = argparse.ArgumentParser(
+                                   description="Create Garry's Mod spawnlists directly from mountable games' .vpk files.", 
+                                   epilog=f"The default location for the configuration file is dependent on your operating system. Yours can be found at \"{SpawnlistGeneratorConfig.get_default_filepath()}\""
+                                   )
           self.__parser.add_argument(
                                    "--steam-path", 
                                    dest="steam_path", 
