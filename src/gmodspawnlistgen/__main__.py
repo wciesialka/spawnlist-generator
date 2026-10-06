@@ -29,7 +29,6 @@ def main():
         config.steam_path = steam_path
     else:
         steam_path = config.steam_path
-    print(steam_path)
     
     gmod_path = args.gmod_path
     if gmod_path:
@@ -61,6 +60,8 @@ def main():
     generator = SpawnlistGenerator(config)
     spawnlist = generator.spawnlist_from_vpk(spawnlist_name, pak)
     generator.save_spawnlist(spawnlist)
+
+    print("Spawnlist generated successfully.")
 
 if __name__ == "__main__":
     main()
