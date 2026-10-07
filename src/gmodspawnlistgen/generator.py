@@ -7,6 +7,7 @@ import re
 import vpk
 
 INVALID_FILENAME_CHARACTERS_REGEX = re.compile(r'[<>:"/\\|?*\x00-\x1F]')
+WHITESPACE_REGEX = re.compile(r'\s')
 
 class SpawnlistGenerator:
 
@@ -29,7 +30,7 @@ class SpawnlistGenerator:
         last_id = int(last_file[:last_file.index('-')])
         return int(last_id)
     
-    def get_new_spawnlist_id(self):
+    def get_next_spawnlist_id(self):
         return self.get_latest_spawnlist_id() + 1
 
     def populate_spawnlist(self, spawnlist: Spawnlist, structure: ModelPath):
@@ -57,7 +58,7 @@ class SpawnlistGenerator:
                 spawnlist.add_model(model)
     
     def spawnlist_from_vpk(self, name: str, pak: vpk.VPKFile) -> Spawnlist:
-        Spawnlist.ID = self.get_new_spawnlist_id()
+        Spawnlist.ID = self.get_next_spawnlist_id()
         spawnlist = Spawnlist(name)
         structure = ModelPath("root")
 
@@ -71,6 +72,8 @@ class SpawnlistGenerator:
     
     def save_spawnlist(self, spawnlist: Spawnlist):
         clean_name = INVALID_FILENAME_CHARACTERS_REGEX.sub("", spawnlist.name)
+        clean_name = WHITESPACE_REGEX.sub("_", clean_name)
+        clean_name = clean_name.lower()
         filename = f"{spawnlist.id:03d}-" + clean_name + ".txt"
         filepath = self.spawnlist_dir / filename
 
