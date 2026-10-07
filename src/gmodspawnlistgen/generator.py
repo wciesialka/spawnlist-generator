@@ -3,7 +3,10 @@ from gmodspawnlistgen.spawnlist import Spawnlist
 from gmodspawnlistgen.modelpath import ModelPath
 from gmodspawnlistgen.valvetable import ValveTableFile
 import os
+import re
 import vpk
+
+INVALID_FILENAME_CHARACTERS_REGEX = re.compile(r'[<>:"/\\|?*\x00-\x1F]')
 
 class SpawnlistGenerator:
 
@@ -22,8 +25,8 @@ class SpawnlistGenerator:
         path = self.spawnlist_dir
         files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
         sorted_files = sorted(files, key=lambda f: int(f[:f.index('-')]))
-        last_file = files[-1]
-        last_id = last_file[:3]
+        last_file = sorted_files[-1]
+        last_id = int(last_file[:last_file.index('-')])
         return int(last_id)
     
     def get_new_spawnlist_id(self):
@@ -67,7 +70,8 @@ class SpawnlistGenerator:
         return spawnlist
     
     def save_spawnlist(self, spawnlist: Spawnlist):
-        filename = f"{spawnlist.id:03d}-" + spawnlist.name + ".txt"
+        clean_name = INVALID_FILENAME_CHARACTERS_REGEX.sub("", spawnlist.name)
+        filename = f"{spawnlist.id:03d}-" + clean_name + ".txt"
         filepath = self.spawnlist_dir / filename
 
         with ValveTableFile(filepath, "w") as vtf:
