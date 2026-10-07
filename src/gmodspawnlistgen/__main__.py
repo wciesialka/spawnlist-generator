@@ -59,9 +59,11 @@ def main():
     
     generator = SpawnlistGenerator(config)
     spawnlist = generator.spawnlist_from_vpk(spawnlist_name, pak)
-    generator.save_spawnlist(spawnlist)
+    results = generator.save_spawnlist(spawnlist)
 
-    print("Spawnlist generated successfully.")
+    print("\033[92mSpawnlist(s) generated successfully\033[0m:")
+    for filename in results:
+        print(f"\t\033[95m{filename}\033[0m")
 
 if __name__ == "__main__":
     main()

@@ -70,7 +70,9 @@ class SpawnlistGenerator:
 
         return spawnlist
     
-    def save_spawnlist(self, spawnlist: Spawnlist):
+    def save_spawnlist(self, spawnlist: Spawnlist) -> list:
+        results = []
+
         clean_name = INVALID_FILENAME_CHARACTERS_REGEX.sub("", spawnlist.name)
         clean_name = WHITESPACE_REGEX.sub("_", clean_name)
         clean_name = clean_name.lower()
@@ -79,6 +81,11 @@ class SpawnlistGenerator:
 
         with ValveTableFile(filepath, "w") as vtf:
             vtf.write("TableToKeyValues", spawnlist.as_dict())
+
+        results.append(filename)
         
         for child in spawnlist.children:
-            self.save_spawnlist(child)
+            child_result = self.save_spawnlist(child)
+            results.extend(child_result)
+        
+        return results
